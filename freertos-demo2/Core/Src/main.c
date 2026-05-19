@@ -35,20 +35,20 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 //任务1配置参数
-#define TASK1_PRIO 1//优先级
-#define TASK1_SIZE 128 //任务堆栈大小
-StackType_t task1Stack[TASK1_SIZE];//任务堆栈数组
-StaticTask_t task1TCB;//任务控制块
-TaskHandle_t task1Handler;//任务句柄
-void task1Task(void *pvParameters);//任务函数
+#define TASK1_PRIO 1//任务1优先级
+#define TASK1_STACK_SIZE 128//任务1堆栈大小
+StackType_t Task1Stack[TASK1_STACK_SIZE];//任务1堆栈数组
+StaticTask_t Task1TCB;//任务1控制块
+TaskHandle_t Task1Handler;//任务1句柄
+void Task1(void *pvParameters);//任务1函数声明
 
 //任务2配置参数
-#define TASK2_PRIO 2//优先级
-#define TASK2_SIZE 128 //任务堆栈大小
-StackType_t task2Stack[TASK2_SIZE];//任务堆栈数组
-StaticTask_t task2TCB;//任务控制块
-TaskHandle_t task2Handler;//任务句柄
-void task2Task(void *pvParameters);//任务函数
+#define TASK2_PRIO 1//任务2优先级 
+#define TASK2_STACK_SIZE 128//任务2堆栈大小
+StackType_t Task2Stack[TASK2_STACK_SIZE];//任务2堆栈数组
+StaticTask_t Task2TCB;//任务2控制块
+TaskHandle_t Task2Handler;//任务2句柄
+void Task2(void *pvParameters);//任务2函数声明
 
 /* USER CODE END PD */
 
@@ -105,13 +105,15 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-
-  //创建用户任务task1,task2
-  task1Handler = xTaskCreateStatic(task1Task,"task1Task",TASK1_SIZE, NULL, TASK1_PRIO, task1Stack, &task1TCB);
-  task2Handler = xTaskCreateStatic(task2Task,"task2Task",TASK2_SIZE, NULL, TASK2_PRIO, task2Stack, &task2TCB);
-
-  //启动任务调度器
-  vTaskStartScheduler();
+  //创建任务1,2
+  Task1Handler=xTaskCreateStatic(Task1, "Task1", TASK1_STACK_SIZE, NULL, TASK1_PRIO, Task1Stack, &Task1TCB);
+  Task2Handler=xTaskCreateStatic(Task2, "Task2", TASK2_STACK_SIZE, NULL, TASK2_PRIO, Task2Stack, &Task2TCB);
+   if(Task1Handler==NULL||Task2Handler==NULL)
+  {
+    Error_Handler();
+  }
+   vTaskStartScheduler();//启动调度器
+  
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -176,20 +178,24 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-//用户自定义任务1
-void task1Task(void *pvParameters){
-  while(1){
-    HAL_GPIO_WritePin(LED0_GPIO_Port,LED0_Pin,GPIO_PIN_RESET);
+//任务1函数实现
+void Task1(void *pvParameters)
+{
+  while(1)
+  {
+     HAL_GPIO_WritePin(LED0_GPIO_Port,LED0_Pin,GPIO_PIN_RESET);
     osDelay(500);
     HAL_GPIO_WritePin(LED0_GPIO_Port,LED0_Pin,GPIO_PIN_SET);
     osDelay(500);
   }
 }
 
-//用户自定义任务2
-void task2Task(void *pvParameters){
-  while(1){
-    HAL_GPIO_WritePin(LED1_GPIO_Port,LED1_Pin,GPIO_PIN_SET);
+//任务2函数实现
+void Task2(void *pvParameters)
+{
+  while(1)
+  {
+     HAL_GPIO_WritePin(LED1_GPIO_Port,LED1_Pin,GPIO_PIN_SET);
     osDelay(500);
     HAL_GPIO_WritePin(LED1_GPIO_Port,LED1_Pin,GPIO_PIN_RESET);
     osDelay(500);
