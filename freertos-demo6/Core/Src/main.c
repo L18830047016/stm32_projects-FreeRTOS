@@ -26,6 +26,7 @@
 /* USER CODE BEGIN Includes */
 #include "task.h"
 #include <stdio.h>
+#include "queue.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,21 +41,21 @@
 TaskHandle_t StartTask_Handler;
 void Start_Task(void *pvParameters);
 
-//åœ¨æ­å»ºå®ç‰©æ—¶ï¼Œä¸¤ä¸ªLEDä¸è¦å…¬ç”¨åŒä¸€ä¸ªç”µé˜»è¿æ¥åˆ°GNDï¼Œæ­¤è¡Œä¸ºä¼šå‡ºç°ä¸²æ‰°å¯¼è‡´LED0ï¼ˆæŒ‚èµ·å°ç¯ï¼‰å‡ºç°åŠäº®çš„ç‰¹æ®Šç°è±¡
-#define LED0_PRIO 2
-#define LED0_STACK_SIZE 128
-TaskHandle_t LED0Task_Handler;
-void LED0_Task(void *pvParameters);
+#define REC_PRIO 3
+#define REC_STACK_SIZE 128
+TaskHandle_t rec_Handler;
+void Rec_Task(void *pvParameters);
 
-#define LED1_PRIO 3
-#define LED1_STACK_SIZE 128
-TaskHandle_t LED1Task_Handler;
-void LED1_Task(void *pvParameters);
+//´®¿Ú·¢ËÍÅäÖÃ²ÎÊı
+#define SEND_PRIO 4
+#define SEND_STACK_SIZE 128
+TaskHandle_t send_Handler;
+void Send_Task(void *pvParameters);
 
-#define KEY_PRIO 4
-#define KEY_STACK_SIZE 128
-TaskHandle_t KEYTask_Handler;
-void KEY_Task(void *pvParameters);
+//ÏûÏ¢¶ÓÁĞ¾ä±ú
+QueueHandle_t myQueue=NULL;
+#define QUEUE_LEN 4//¶ÓÁĞ³¤¶È
+#define QUEUE_ITEM_SIZE 4//¶ÓÁĞÔªËØ´óĞ¡£¨×Ö½Ú£©
 
 /* USER CODE END PD */
 
@@ -113,11 +114,11 @@ int main(void)
   MX_USART1_UART_Init();
 	
   /* USER CODE BEGIN 2 */
-	//é€šè¿‡ä¸²å£å‘pcå‘é€æ•°æ®
-	printf("%s\n","test,test");
-	//åˆ›å»ºå¯åŠ¨ä»»åŠ¡
+	//Í¨¹ı´®¿ÚÏòpc·¢ËÍÊı¾İ
+	printf("usart init success");
+	//´´½¨Æô¶¯ÈÎÎñ
    xTaskCreate(Start_Task,"Start_Task",START_STACK_SIZE,NULL,START_PRIO,&StartTask_Handler);
-   //å¯åŠ¨è°ƒåº¦å™¨
+   //Æô¶¯µ÷¶ÈÆ÷
 	 vTaskStartScheduler();
   /* USER CODE END 2 */
 
@@ -185,42 +186,62 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void Start_Task(void *pvParameters){ 
   taskENTER_CRITICAL();
-  xTaskCreate(LED0_Task,"LED0_Task",LED0_STACK_SIZE,NULL,LED0_PRIO,&LED0Task_Handler);
-  xTaskCreate(LED1_Task,"LED1_Task",LED1_STACK_SIZE,NULL,LED1_PRIO,&LED1Task_Handler);
-  xTaskCreate(KEY_Task,"KEY_Task",KEY_STACK_SIZE,NULL,KEY_PRIO,&KEYTask_Handler);
-  vTaskDelete(NULL); 
+  //´´½¨ÏûÏ¢¶ÓÁĞ
+  myQueue=xQueueCreate(QUEUE_LEN,QUEUE_ITEM_SIZE);
+  if(myQueue==NULL){
+    printf("queue created fail");
+  }else{
+  printf("queue created success");
+    xTaskCreate(Rec_Task,"Rec_Task",REC_STACK_SIZE,NULL,REC_PRIO,&rec_Handler);
+  xTaskCreate(Send_Task,"Send_Task",SEND_STACK_SIZE,NULL,SEND_PRIO,&send_Handler);
+
+  }
+    vTaskDelete(NULL); 
   taskEXIT_CRITICAL();
 }
 
-void LED0_Task(void *pvParameters){
-  while(1){
-     HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
-    osDelay(500);
-    HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
-    osDelay(500);
-  }
-}
 
-void LED1_Task(void *pvParameters){
+void Rec_Task(void *pvParameters){
+  uint32_t data=0;//±£´æ½ÓÊÕµ½µÄÊı¾İ
+  BaseType_t res=pdFALSE;
   while(1){
-    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
-    osDelay(500);
-    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-    osDelay(500);
+
+   res= xQueueReceive(myQueue,&data,5000);
+   if(res==pdTRUE){
+    printf("data receive success,the data is :");
+    printf("%d\n",data);
+   }else{
+      printf("data receive fail");
+   }
+    osDelay(20);
   }
 }  
 
-void KEY_Task(void *pvParameters){
+void Send_Task(void *pvParameters){
   uint8_t keyNum = 0;
+  uint32_t data1=111;
+  uint32_t data2=222;
+  BaseType_t res=pdFALSE;
+
   while(1){
-    keyNum=Key_GetKeyNum();
-    if(keyNum == 1){
-      //ï¿½ï¿½ï¿½ï¿½LED0ï¿½ï¿½ï¿½ï¿½
-      vTaskSuspend(LED0Task_Handler);
-    }else if(keyNum == 2){
-      //ï¿½Ö¸ï¿½LED0ï¿½ï¿½ï¿½ï¿½
-      vTaskResume(LED0Task_Handler);
-    }
+   keyNum=Key_GetKeyNum();
+   if(keyNum==1){
+    printf("%s\n","key1 click,send data1");
+    res=xQueueSend(myQueue,&data1,0);
+      if(res==pdTRUE){
+        printf("data1 send success");
+      }else{
+        printf("data1 send fail");
+      }
+   }else if(keyNum==2){
+     printf("%s\n","key2 click,send data2");
+    res=xQueueSend(myQueue,&data2,0);
+      if(res==pdTRUE){
+        printf("data2 send success");
+      }else{
+        printf("data2 send fail");
+      }
+   }
     osDelay(20);
   }
 }

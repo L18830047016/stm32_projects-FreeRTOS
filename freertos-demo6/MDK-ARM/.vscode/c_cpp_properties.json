@@ -3,19 +3,19 @@
         {
             "name": "freertos-demo",
             "includePath": [
-                "d:\\airui\\stm32-projects\\freertos-demo5\\Core\\Inc",
-                "d:\\airui\\stm32-projects\\freertos-demo5\\Drivers\\STM32F1xx_HAL_Driver\\Inc\\Legacy",
-                "d:\\airui\\stm32-projects\\freertos-demo5\\Drivers\\STM32F1xx_HAL_Driver\\Inc",
-                "d:\\airui\\stm32-projects\\freertos-demo5\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
-                "d:\\airui\\stm32-projects\\freertos-demo5\\Middlewares\\Third_Party\\FreeRTOS\\Source\\CMSIS_RTOS_V2",
-                "d:\\airui\\stm32-projects\\freertos-demo5\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM3",
-                "d:\\airui\\stm32-projects\\freertos-demo5\\Drivers\\CMSIS\\Device\\ST\\STM32F1xx\\Include",
-                "d:\\airui\\stm32-projects\\freertos-demo5\\Drivers\\CMSIS\\Include",
-                "d:\\airui\\stm32-projects\\freertos-demo5\\MDK-ARM",
-                "d:\\airui\\stm32-projects\\freertos-demo5\\Core\\Src",
-                "d:\\airui\\stm32-projects\\freertos-demo5\\Drivers\\STM32F1xx_HAL_Driver\\Src",
-                "d:\\airui\\stm32-projects\\freertos-demo5\\Middlewares\\Third_Party\\FreeRTOS\\Source",
-                "d:\\airui\\stm32-projects\\freertos-demo5\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\MemMang"
+                "d:\\airui\\stm32-projects\\freertos-demo6\\Core\\Inc",
+                "d:\\airui\\stm32-projects\\freertos-demo6\\Drivers\\STM32F1xx_HAL_Driver\\Inc\\Legacy",
+                "d:\\airui\\stm32-projects\\freertos-demo6\\Drivers\\STM32F1xx_HAL_Driver\\Inc",
+                "d:\\airui\\stm32-projects\\freertos-demo6\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
+                "d:\\airui\\stm32-projects\\freertos-demo6\\Middlewares\\Third_Party\\FreeRTOS\\Source\\CMSIS_RTOS_V2",
+                "d:\\airui\\stm32-projects\\freertos-demo6\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM3",
+                "d:\\airui\\stm32-projects\\freertos-demo6\\Drivers\\CMSIS\\Device\\ST\\STM32F1xx\\Include",
+                "d:\\airui\\stm32-projects\\freertos-demo6\\Drivers\\CMSIS\\Include",
+                "d:\\airui\\stm32-projects\\freertos-demo6\\MDK-ARM",
+                "d:\\airui\\stm32-projects\\freertos-demo6\\Core\\Src",
+                "d:\\airui\\stm32-projects\\freertos-demo6\\Drivers\\STM32F1xx_HAL_Driver\\Src",
+                "d:\\airui\\stm32-projects\\freertos-demo6\\Middlewares\\Third_Party\\FreeRTOS\\Source",
+                "d:\\airui\\stm32-projects\\freertos-demo6\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\MemMang"
             ],
             "defines": [
                 "USE_HAL_DRIVER",
