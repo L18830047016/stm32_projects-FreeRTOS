@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,6 +46,13 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 
+//开关中断任务配置参数
+osThreadId_t interruptTaskHandle;
+const osThreadAttr_t interruptTask_attr={
+  .name="interruptTask",
+  .stack_size=128*4,
+  .priority=osPriorityNormal2
+};
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -55,9 +62,10 @@ const osThreadAttr_t defaultTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
+void InterruptTask(void* param);
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
@@ -96,6 +104,8 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+  interruptTaskHandle=osThreadNew(InterruptTask,NULL,&interruptTask_attr);
+
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -124,6 +134,23 @@ void StartDefaultTask(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
+void InterruptTask(void* param){
+  uint32_t i=0;
+  static uint32_t count=0;//记录任务运行次数
+  for(;;){
+    count++;
+    if(count==5){
+      printf("close ISR\n");
+      portDISABLE_INTERRUPTS();
 
+      //等待一会，大概7、8s
+      for(;i<100000000;i++);
+
+      printf("open ISR\n");
+      portENABLE_INTERRUPTS();
+    }
+    osDelay(1000);
+  }
+}
 /* USER CODE END Application */
 
